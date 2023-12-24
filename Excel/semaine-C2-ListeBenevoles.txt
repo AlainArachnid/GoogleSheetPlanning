@@ -1,2 +1,2 @@
-=IFERROR(SUBSTITUTE(SUBSTITUTE(TEXTJOIN("///"; TRUE; FILTER(Présences!$A:$A; Présences!I:I= F3)); " "; UNICHAR(160));"///"; " / ")
-& IF($H3="";;" [" & COUNTA(FILTER(Présences!A:A; Présences!I:I= F3)) & "]");"")
+=IFERROR(SUBSTITUTE(SUBSTITUTE(TEXTJOIN("///"; TRUE; FILTER(Présences!C1; INDIRECT("Présences!C" & (R1C2-Présences!R1C8+3+nbPosteParSemaine+ParamSemaine!RC);FALSE)= ParamSemaine!RC2)); " "; UNICHAR(160));"///"; " / ")
+& IF(ParamSemaine!RC7="";;" [" & COUNTA(FILTER(Présences!C[-2]; Présences!C[6]=ParamSemaine!RC2)) & "]");"")
