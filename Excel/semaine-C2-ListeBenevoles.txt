@@ -1,0 +1,2 @@
+=IFERROR(SUBSTITUTE(SUBSTITUTE(TEXTJOIN("///"; TRUE; FILTER(Présences!$A:$A; Présences!I:I= F3)); " "; UNICHAR(160));"///"; " / ")
+& IF($H3="";;" [" & COUNTA(FILTER(Présences!A:A; Présences!I:I= F3)) & "]");"")
