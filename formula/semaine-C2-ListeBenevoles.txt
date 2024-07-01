@@ -1,25 +1,25 @@
 =IFERROR(SUBSTITUTE(SUBSTITUTE(JOIN("///";
-        QUERY('Présences'!$A:$ZZ; "select A where " &
-        SUBSTITUTE(ADDRESS(3;($G$2-INDIRECT("'Présences'!" & ADDRESS(1; $F$2+4; 1)))*$F$2 + 7 + INDIRECT(ADDRESS($G3; COLUMN(C3)+5; 1)); 4);"3";"")
-        & " = '" &$F3 & "'" &
+        QUERY('Présences'!$A:$ADB; "select A where `" &
+        SUBSTITUTE(ADDRESS(3;($B$1-INDIRECT("'Présences'!" & ADDRESS(1; $F$2+4; 1)))*$F$2 + 7 + INDIRECT(ADDRESS($G3; COLUMN(C3)+5; 1)); 4);"3";"")
+        & "` = '" &$F3 & "'" &
         SWITCH($I3; ""; ; "_"; "and B=''"; "!"; "and B<>''"; "and B='" & $I3 & "'")
         ; 0)
         ); " "; " "); "///"; " / ");)
 & IF($H3 <> ""; " [" &
-        QUERY('Présences'!$A:$ZZ; "select COUNT(A) where " &
-        SUBSTITUTE(ADDRESS(3;($G$2-INDIRECT("'Présences'!" & ADDRESS(1; $F$2+4; 1)))*$F$2 + 7 + INDIRECT(ADDRESS($G3; COLUMN(C3)+5; 1)); 4);"3";"")
-        & " = '" & $F3 & "'" &
+        QUERY('Présences'!$A:$ADB; "select COUNT(A) where `" &
+        SUBSTITUTE(ADDRESS(3;($B$1-INDIRECT("'Présences'!" & ADDRESS(1; $F$2+4; 1)))*$F$2 + 7 + INDIRECT(ADDRESS($G3; COLUMN(C3)+5; 1)); 4);"3";"")
+        & "` = '" & $F3 & "'" &
         SWITCH($I3; ""; ; "_"; "and B=''"; "!"; "and B<>''"; "and B='" & $I3 & "'")
         & "label COUNT(A) ''"; 0)
         & "]";)
 & IF ($E$1;IFERROR(" (" & 
         REGEXREPLACE(
         SUBSTITUTE(SUBSTITUTE(JOIN("///";
-        QUERY('Présences'!$A:$ZZ; "select A where " & 
+        QUERY('Présences'!$A:$ADB; "select A where `" & 
         SUBSTITUTE(ADDRESS(3;3 + INDIRECT(ADDRESS($G3; COLUMN(C3)+5; 1)); 4);"3";"")
-        & " = '" & $F3 & "'" &
+        & "` = '" & $F3 & "'" &
         SWITCH($I3; ""; ; "_"; "and B=''"; "!"; "and B<>''"; "and B='" & $I3 & "'")
         & " and " &
-        SUBSTITUTE(ADDRESS(3;($G$2-INDIRECT("'Présences'!" & ADDRESS(1; $F$2+4; 1)))*$F$2 + 7 + INDIRECT(ADDRESS($G3; COLUMN(C3)+5; 1)); 4);"3";"")
+        SUBSTITUTE(ADDRESS(3;($B$1-INDIRECT("'Présences'!" & ADDRESS(1; $F$2+4; 1)))*$F$2 + 7 + INDIRECT(ADDRESS($G3; COLUMN(C3)+5; 1)); 4);"3";"")
         & " != '" & $F3 & "' "; 0)); " "; " "); "///"; " / ")
         ;".{1}"; "$0" & char(822)) & ")";);)
