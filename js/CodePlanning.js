@@ -16,7 +16,7 @@ function doTest() {
   //SpreadsheetApp.getUi().alert(rDebug);
   let d = new Date();
   doLog(d.toLocaleString('fr-FR'));
-  */
+  // */
   /*
   let sPresences = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(NomOngletPresences);
   //rModified = sPresences.getRange(PremiereLigneBenevole, PremiereColonneDefaut + NbDemiJournee, 3, NbDemiJournee);
@@ -25,9 +25,14 @@ function doTest() {
   rModified = sPresences.getRange(PremiereLigneBenevole, PremiereColonneDefaut + NbDemiJournee * 1, 155 - 3, ((52+1-46) + 10)*NbDemiJournee);  
   //RemettreDefaut(rModified);
   RemettreFormule(rModified);
-  */
-  //duplicate(19, 20, 41);  // à adapter chaque campagne
+  // */
+  /* */
   // faire 2 appels pour la campagne d'hiver, un appel pour chaque année
+  // faire 2 appels pour la campagne d'été, un appel pour chaque demi campagne
+  // commencer par le 2e bloc
+  duplicate(19, 36, 43);  // à adapter chaque campagne
+  duplicate(19, 20, 26);  // à adapter chaque campagne
+  // */
 }
 
 function duplicate(sSource, sMin, sMax) {
