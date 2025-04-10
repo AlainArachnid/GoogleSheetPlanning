@@ -26,24 +26,45 @@ function doTest() {
   //RemettreDefaut(rModified);
   RemettreFormule(rModified);
   // */
-  /* */
+  /* *
   // faire 2 appels pour la campagne d'hiver, un appel pour chaque année
   // faire 2 appels pour la campagne d'été, un appel pour chaque demi campagne
+  // ATTENTION avant à contrôler la case du numéro de ligne pour le stock en bas (case G28)
   // commencer par le 2e bloc
   duplicate(19, 36, 43);  // à adapter chaque campagne
   duplicate(19, 20, 26);  // à adapter chaque campagne
   // */
+  /* *
+  for (let i = 19; i <= 26; i++) patchV(i);
+  for (let i = 36; i <= 43; i++) patchV(i);
+  patchV(19);
+  // */
+}
+
+function patchV(i) {
+  //SpreadsheetApp.getUi().alert('i=' + i);
+  let oDoc = SpreadsheetApp.getActive();
+  let oSheet = oDoc.getSheetByName('S' + i);
+  let r = oSheet.getRange(28, 7, 1, 1);
+  let v = r.getValue();
+  if (v != 27) {
+    SpreadsheetApp.getUi().alert('v=' + v);
+    return;
+  }
+  r.setValue(26);
 }
 
 function duplicate(sSource, sMin, sMax) {
   let oDoc = SpreadsheetApp.getActive();
-    let tabSource = oDoc.getSheetByName('S' + sSource);
-    for (let i = sMax; i >= sMin; i--) {
-      tabSource.activate();
-      let newSheet = oDoc.duplicateActiveSheet();
-      newSheet.setName('S' + i);
-      newSheet.getRange(1, 2, 1, 1).setValue(i);
-    }
+  let tabSource = oDoc.getSheetByName('S' + sSource);
+  for (let i = sMax; i >= sMin; i--) {
+    tabSource.activate();
+    let newSheet = oDoc.getSheetByName('S' + i);
+    if (newSheet) oDoc.deleteSheet(newSheet);
+    newSheet = oDoc.duplicateActiveSheet();
+    newSheet.setName('S' + i);
+    newSheet.getRange(1, 2, 1, 1).setValue(i);
+  }
 }
 
 function RemettreFormule(rModified) {
