@@ -4,7 +4,7 @@
         & "` = '" &$F3 & "'" &
         SWITCH($I3; ""; ; "_"; "and B=''"; "!"; "and B<>''"; "and B='" & $I3 & "'")
         ; 0)
-        ); " "; " "); "///"; " / ");)
+        ); " "; " "); "///"; " / ");)
 & IF($H3 <> ""; " [" &
         QUERY('Présences'!$A:$ADF; "select COUNT(A) where `" &
         SUBSTITUTE(ADDRESS(3;(mod($B$1-INDIRECT("'Présences'!" & ADDRESS(1; $F$2+4; 1));52))*$F$2 + 7 + INDIRECT(ADDRESS($G3; COLUMN(C3)+5; 1)); 4);"3";"")
@@ -21,5 +21,5 @@
         SWITCH($I3; ""; ; "_"; "and B=''"; "!"; "and B<>''"; "and B='" & $I3 & "'")
         & " and `" &
         SUBSTITUTE(ADDRESS(3;(mod($B$1-INDIRECT("'Présences'!" & ADDRESS(1; $F$2+4; 1));52))*$F$2 + 7 + INDIRECT(ADDRESS($G3; COLUMN(C3)+5; 1)); 4);"3";"")
-        & "` != '" & $F3 & "' "; 0)); " "; " "); "///"; " / ")
+        & "` != '" & $F3 & "' "; 0)); " "; " "); "///"; " / ")
         ;".{1}"; "$0" & char(822)) & ")";);)

@@ -1,12 +1,146 @@
+'use strict';
+
 const NomOngletPresences = 'Présences';
+const PremiereLigneBenevole = 4;
+const LigneSemaine = 1;
+const PremiereLigneDistribution = 3;
+const DerniereLigneDistribution = 24;
+const LigneStock = 28;
 const PremiereColonneDefaut = 4;
 const NbDemiJournee = 4;
-const PremiereLigneBenevole = 4;
+const ColNom = 1;
+const ColPadawan = 2;
+
+// opérationel
 
 function onEdit(e) {
   RemettreDefaut(e.range);
   let d = new Date();
   doLog('fin onEdit pour ' + e.user + ' ' + d.toLocaleString('fr-FR'));
+}
+
+function afficherTousLesOnglets() {
+  let spreadSheet = SpreadsheetApp.getActiveSpreadsheet();
+  for (let sheet of spreadSheet.getSheets()) {
+    sheet.showSheet();
+  }
+}
+
+function preparaCampagne() {
+  // faire 2 appels pour la campagne d'hiver, un appel pour chaque année
+  // faire 2 appels pour la campagne d'été, un appel pour chaque demi campagne
+  // ATTENTION avant à contrôler la case du numéro de ligne pour le stock en bas (case G28)
+  // commencer par le 2e bloc
+  duplicate(19, 36, 43);  // à adapter chaque campagne
+  duplicate(19, 20, 26);  // à adapter chaque campagne
+}
+
+function duplicate(sSource, sMin, sMax) {
+  let oDoc = SpreadsheetApp.getActive();
+  let tabSource = oDoc.getSheetByName('S' + sSource);
+  for (let i = sMax; i >= sMin; i--) {
+    tabSource.activate();
+    let newSheet = oDoc.getSheetByName('S' + i);
+    if (newSheet) oDoc.deleteSheet(newSheet);
+    newSheet = oDoc.duplicateActiveSheet();
+    newSheet.setName('S' + i);
+    newSheet.getRange(1, 2, 1, 1).setValue(i);
+  }
+}
+
+class cSemainePlanning {
+  /* déclaration des propriétés non supporté par googlesheet
+  static oDoc;
+  static oSheetPresences;
+  static nLastRowPresences;
+  static rEntetePresences;
+  static nFirstSemaine;
+  static instances;
+  // */
+
+  static init() {
+    cSemainePlanning.oDoc = SpreadsheetApp.getActiveSpreadsheet();
+    cSemainePlanning.oSheetPresences = cSemainePlanning.oDoc.getSheetByName('Présences');
+    cSemainePlanning.nLastRowPresences = cSemainePlanning.oSheetPresences.getLastRow();
+    cSemainePlanning.rEntetePresences = cSemainePlanning.oSheetPresences.getRange(PremiereLigneBenevole, 1, 1 + cSemainePlanning.nLastRowPresences - PremiereLigneBenevole, PremiereColonneDefaut + NbDemiJournee - 1);
+    cSemainePlanning.nFirstSemaine = parseInt(cSemainePlanning.oSheetPresences.getRange(LigneSemaine, PremiereColonneDefaut + NbDemiJournee, 1, 1).getValue());
+  }
+
+  static getInstance(nSemaine) {
+    if (!cSemainePlanning.oDoc) cSemainePlanning.init()
+    nSemaine = parseInt(nSemaine);
+    if (cSemainePlanning.instances) {
+      if (cSemainePlanning.instances[nSemaine]) return cSemainePlanning.instances[nSemaine];
+    } else {
+        cSemainePlanning.instances = [];
+    }
+    let oInstance = new cSemainePlanning(nSemaine);
+    cSemainePlanning.instances[nSemaine] = oInstance;
+    return oInstance;
+  }
+
+  static loadAllInstances() {
+    if (!cSemainePlanning.oDoc) cSemainePlanning.init()
+    for (let oSheet of cSemainePlanning.oDoc.getSheets()) {
+      let iSemaine = parseInt(oSheet.getName().substring(1));
+      if (isNaN(iSemaine)) continue;
+      cSemainePlanning.getInstance(iSemaine);
+    }
+  }
+
+  // fin zone statique
+
+  /* déclaration des propriétés non supporté par googlesheet
+  nSemaine;
+  rSemainePresences;
+  //  */
+
+  constructor(nSemaine) {
+    this.nSemaine = nSemaine;
+    //this.rSemainePresences = cSemainePlanning.oSheetPresences.getRange(PremiereLigneBenevole, PremiereColonneDefaut + (nSemaine - cSemainePlanning.nFirstSemaine) * NbDemiJournee, 1 + cSemainePlanning.nLastRowPresences - PremiereLigneBenevole, NbDemiJournee);
+  }
+
+  /* abandonné
+  doPlanning(postesParSemaine, affichageBenevolesAbsents, code, compteur, formation, numeroPoste) {
+    // liste des bénévoles
+    // liste des bénévoles absents
+    // affichage
+    return `nSemaine=${this.nSemaine}, firstSemaine=${cSemainePlanning.nFirstSemaine}, col=${PremiereColonneDefaut + (this.nSemaine - cSemainePlanning.nFirstSemaine) * NbDemiJournee}`;
+    return 'S' + this.nSemaine + ' (' + postesParSemaine + ') ' + (affichageBenevolesAbsents ? 'avec' : 'sans') + ' affichage absents';
+  }
+  // */
+}
+
+// test/debuging
+
+function duplicateFormulaToAll() {
+  // prendre la formule en C3 de la première semaine et la mettre partout
+  // et ausi mettre la plage des présences en G2 de chaque onglet de semaine
+
+  cSemainePlanning.loadAllInstances();
+  // trouver la première semaine
+  let firstSemaine;
+  for (let oSemaine of cSemainePlanning.instances) {
+      if (!oSemaine) continue;
+      doLog(`vu semaine ${oSemaine.nSemaine}`);
+      if (firstSemaine === undefined || firstSemaine > oSemaine.nSemaine) firstSemaine = oSemaine.nSemaine;
+  }
+  doLog(`firstSemaine=${firstSemaine}`, true);
+  let formula = cSemainePlanning.oDoc.getSheetByName('S' + firstSemaine).getRange(3, PremiereLigneDistribution, 1, 1).getFormulaR1C1();
+  doLog(formula.toString(), true);
+  for (let oSemaine of cSemainePlanning.instances) {
+      if (!oSemaine) continue;
+      let oSheet = cSemainePlanning.oDoc.getSheetByName('S' + oSemaine.nSemaine);
+      // mettre la formule dans la zone distribution
+      oSheet.getRange(PremiereLigneDistribution, 3, 1 + DerniereLigneDistribution - PremiereLigneDistribution, 2).setFormulaR1C1(formula);
+      // mettre la formule dans la zone stock
+      oSheet.getRange(LigneStock, 3, 1, 2).setFormulaR1C1(formula);
+      // mettre le range special en G2
+      let firstColPosteCetteSemaine = PremiereColonneDefaut + (1 + oSemaine.nSemaine - cSemainePlanning.nFirstSemaine) * NbDemiJournee;
+      //oSheet.getRange(2, 7, 1, 1).setValue(null);
+      oSheet.getRange(2, 7, 1, 1).setValue(`="'Présences'!$${col2Lettre(firstColPosteCetteSemaine)}:$${col2Lettre(firstColPosteCetteSemaine + NbDemiJournee - 1)}"`);
+      doLog(`fait semaine ${oSemaine.nSemaine}`, true);
+  }
 }
 
 function doTest() {
@@ -27,14 +161,6 @@ function doTest() {
   RemettreFormule(rModified);
   // */
   /* *
-  // faire 2 appels pour la campagne d'hiver, un appel pour chaque année
-  // faire 2 appels pour la campagne d'été, un appel pour chaque demi campagne
-  // ATTENTION avant à contrôler la case du numéro de ligne pour le stock en bas (case G28)
-  // commencer par le 2e bloc
-  duplicate(19, 36, 43);  // à adapter chaque campagne
-  duplicate(19, 20, 26);  // à adapter chaque campagne
-  // */
-  /* *
   for (let i = 19; i <= 26; i++) patchV(i);
   for (let i = 36; i <= 43; i++) patchV(i);
   patchV(19);
@@ -52,19 +178,6 @@ function patchV(i) {
     return;
   }
   r.setValue(26);
-}
-
-function duplicate(sSource, sMin, sMax) {
-  let oDoc = SpreadsheetApp.getActive();
-  let tabSource = oDoc.getSheetByName('S' + sSource);
-  for (let i = sMax; i >= sMin; i--) {
-    tabSource.activate();
-    let newSheet = oDoc.getSheetByName('S' + i);
-    if (newSheet) oDoc.deleteSheet(newSheet);
-    newSheet = oDoc.duplicateActiveSheet();
-    newSheet.setName('S' + i);
-    newSheet.getRange(1, 2, 1, 1).setValue(i);
-  }
 }
 
 function RemettreFormule(rModified) {
