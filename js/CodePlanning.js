@@ -6,7 +6,9 @@ const LigneSemaine = 1;
 const PremiereLigneDistribution = 3;
 const DerniereLigneDistribution = 24;
 const LigneStock = 28;
+const LigneTitreAvecCompteur = 6
 const PremiereColonneDefaut = 4;
+const ColoneTitre = 2
 const NbDemiJournee = 4;
 const ColNom = 1;
 const ColPadawan = 2;
@@ -115,7 +117,8 @@ class cSemainePlanning {
 
 function duplicateFormulaToAll() {
   // prendre la formule en C3 de la première semaine et la mettre partout
-  // et ausi mettre la plage des présences en G2 de chaque onglet de semaine
+  // et aussi mettre la plage des présences en G2 de chaque onglet de semaine
+  // et aussi copier la formule en B6 (titre avec compteur)
 
   cSemainePlanning.loadAllInstances();
   // trouver la première semaine
@@ -127,12 +130,15 @@ function duplicateFormulaToAll() {
   }
   doLog(`firstSemaine=${firstSemaine}`, true);
   let formula = cSemainePlanning.oDoc.getSheetByName('S' + firstSemaine).getRange(3, PremiereLigneDistribution, 1, 1).getFormulaR1C1();
+  let formulaB6 = cSemainePlanning.oDoc.getSheetByName('S' + firstSemaine).getRange(LigneTitreAvecCompteur, ColoneTitre, 1, 1).getFormulaR1C1();
   doLog(formula.toString(), true);
   for (let oSemaine of cSemainePlanning.instances) {
       if (!oSemaine) continue;
       let oSheet = cSemainePlanning.oDoc.getSheetByName('S' + oSemaine.nSemaine);
       // mettre la formule dans la zone distribution
       oSheet.getRange(PremiereLigneDistribution, 3, 1 + DerniereLigneDistribution - PremiereLigneDistribution, 2).setFormulaR1C1(formula);
+      // mettre la formule en B6
+      oSheet.getRange(LigneTitreAvecCompteur, ColoneTitre, 1, 1).setFormulaR1C1(formulaB6);
       // mettre la formule dans la zone stock
       oSheet.getRange(LigneStock, 3, 1, 2).setFormulaR1C1(formula);
       // mettre le range special en G2

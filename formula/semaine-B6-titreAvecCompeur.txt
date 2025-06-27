@@ -1,16 +1,16 @@
 ="Distributeurs/
 Accompagnateurs [Jedi] 
 hab. matin [" &
-        QUERY('Présences'!$A:$ADF; "select COUNT(A) where " &
+        QUERY('Présences'!$A:$G; "select COUNT(A) where " &
         SUBSTITUTE(ADDRESS(3;3 + INDIRECT(ADDRESS($G3; COLUMN(C3)+5; 1)); 4);"3";"")
         & " = '" & $F6 & "'" &
         SWITCH($I6; ""; ; "_"; "and B=''"; "!"; "and B<>''"; "and B='" & $I6 & "'")
-        & "label COUNT(A) ''"; 0)
+        & " label COUNT(A) ''"; 0)
         & "]
 hab. AM [" &
-        QUERY('Présences'!$A:$ADF; "select COUNT(A) where " &
+        QUERY('Présences'!$A:$G; "select COUNT(A) where " &
         SUBSTITUTE(ADDRESS(3;3 + INDIRECT(ADDRESS($G3; COLUMN(C3)+6; 1)); 4);"3";"")
         & " = '" & $F6 & "'" &
         SWITCH($I6; ""; ; "_"; "and B=''"; "!"; "and B<>''"; "and B='" & $I6 & "'")
-        & "label COUNT(A) ''"; 0)
+        & " label COUNT(A) ''"; 0)
         & "]"
