@@ -171,6 +171,186 @@ function doTest() {
   for (let i = 36; i <= 43; i++) patchV(i);
   patchV(19);
   // */
+  doExports();
+}
+
+function doExports() {
+  let nLogDebug = 0;
+  let sPresences = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(NomOngletPresences);
+  let sDebug = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Debug');
+  let lastRow = sPresences.getLastRow();
+  let lastCol = sPresences.getLastColumn();
+  /* */
+  let rangeAll = sPresences.getRange(1, 1, lastRow, lastCol);
+  let values = rangeAll.getValues();
+  let backgroundColors = rangeAll.getBackgrounds();
+  let notes = rangeAll.getNotes();
+  doLog('nRow=' + values.length, true);
+  sDebug.getRange(1, 3, 1, 1).setValue('nRow=' + values.length);
+  let tabBnvCampagne = [];
+  let tabBnvPosteDef = [];
+  let tabBnvPosteSem = [];
+  let category;
+  for (let iRow = 3; iRow < values.length; iRow++) {
+    let valRow = values[iRow];
+    let name = valRow[0];
+    //doLog(iRow + ' ' + name, true);
+    if (name == '') continue;
+    if (['Ramasse SuperU',
+      'DÉPANNAGES :',
+      'MONDELEZ:',
+      'CANDIDATS',
+      'BENEVOLES 1j',
+      'CANDIDATS CH',
+      'DIVERS'].includes(name)) {
+        category = name;
+        continue;
+    }
+    let varBackgrounds = backgroundColors[iRow];
+    let varNotes = notes[iRow];
+    // table BnvCampagne
+    let tabVal = [];
+    tabVal[0] = 2025;
+    tabVal[1] = 'E';
+    tabVal[2] = iRow;
+    tabVal[3] = name.replace(";", ",");
+    tabVal[4] = background2string(varBackgrounds[0]); // couleurNom
+    tabVal[5] = valRow[1] == '' ? 0 : 1;  // padawan
+    tabVal[6] = valRow[2].replace(";", ",").replace("\n", '');  // remarque1
+    tabVal[7] = background2string(varBackgrounds[2]);  // CouleurRemarque
+    tabVal[8] = varNotes[2].replace(";", ",").replace("\n", '');  // Remarque2
+    tabVal[9] = category;
+    tabBnvCampagne.push(tabVal.join(";"));
+
+    // table BnvPosteDef
+    tabVal = [];
+
+    for (let iCol = 4; iCol <= valRow.length; iCol++) {
+      let v = valRow[iCol - 1];
+
+      if (v) {
+        let tabVal = [];
+        tabVal[0] = 2025;
+        tabVal[1] = 'E';
+        tabVal[2] = iRow;
+        let iDemiJournee = iCol % 4;
+        switch (iDemiJournee) {
+          case 0:
+            tabVal[3] = 1;
+            tabVal[4] = 'M';
+            break;
+          case 1:
+            tabVal[3] = 2;
+            tabVal[4] = 'M';
+            break;
+          case 2:
+            tabVal[3] = 2;
+            tabVal[4] = 'A';
+            break;
+          case 3:
+            tabVal[3] = 4;
+            tabVal[4] = 'M';
+            break;
+        }
+        if (iCol > 7) {
+          /*
+          if (nLogDebug++ < 20)
+            doLog(`iRow=${iRow} iCol=${iCol}, iDemiJournee=${iDemiJournee}, v=${v}, valRow[3 + iDemiJournee]=${valRow[3 + iDemiJournee]}`, true);
+          // */
+          if (v == valRow[3 + iDemiJournee]) continue;
+          tabVal[5] = 37 + Math.floor((iCol - 8) / 4);
+          tabVal[6] = v;
+          tabBnvPosteSem.push(tabVal.join(";"));
+        } else {
+          tabVal[5] = v;
+          tabBnvPosteDef.push(tabVal.join(";"));
+        }
+      }
+    }
+  }
+  sDebug.getRange(2, 2, 1, 1).setValue('bnvCampagne');
+  sDebug.getRange(3, 2, 1, 1).setValue(tabBnvCampagne.join('\n') + '\n');
+  sDebug.getRange(2, 3, 1, 1).setValue('bnvPosteDef');
+  sDebug.getRange(3, 3, 1, 1).setValue(tabBnvPosteDef.join('\n') + '\n');
+  sDebug.getRange(2, 4, 1, 1).setValue('bnvPosteSem');
+  let n = 3;
+  let ns = tabBnvPosteSem.length;
+  for (let i = 0; i < ns; i+= 100) {
+    let t2 = tabBnvPosteSem.slice(i, i+100);
+    sDebug.getRange(n++, 4, 1, 1).setValue(t2.join('\n') + '\n');
+  }
+  //sDebug.getRange(n++, 2, 1, 1).setValue(tabBnvPosteSem.join('\n') = '\n');
+  // */
+
+  let dv = sPresences.getRange(4, 4, 1, 1).getDataValidation();
+  sDebug.getRange(2, 5, 1, 1).setValue('criteraValues');
+  sDebug.getRange(3, 5, 1, 1).setValue(JSON.stringify(dv.getCriteriaValues()));
+
+  let tabPoste = [];
+  tabPoste[1] = 'Absent';
+  tabPoste[2] = 'Accueil';
+  tabPoste[3] = 'Café';
+  tabPoste[4] = 'Pointage';
+  tabPoste[5] = 'Distribution';
+  tabPoste[6] = 'BB';
+  tabPoste[7] = 'Lait/compléments';
+  tabPoste[8] = 'Laitages';
+  tabPoste[9] = 'Accomp';
+  tabPoste[10] = 'Mixtes';
+  tabPoste[11] = 'Desserts';
+  tabPoste[12] = 'Fruits & Légumes';
+  tabPoste[13] = 'Surgelés';
+  tabPoste[14] = 'Prot Ambiant';
+  tabPoste[15] = 'Oeufs';
+  tabPoste[16] = 'Pain';
+  tabPoste[17] = 'Inscriptions';
+  tabPoste[18] = 'SRE';
+  tabPoste[19] = 'Coin Internet';
+  tabPoste[20] = 'Vestiaire';
+  tabPoste[21] = 'Inventaire';
+  tabPoste[22] = 'Stock';
+  tabPoste[23] = 'Ramasse Super U';
+  tabPoste[24] = 'Supervision';
+  tabPoste[25] = 'Volants';
+  let oPostes = {};
+  for (let i in tabPoste) oPostes[tabPoste[i]] = i;
+  let posteDJ = [];
+  for (let iSem = 37; iSem <= 44; iSem++) {
+    let oSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('S' + iSem);
+    let r = oSheet.getRange(3, 1, 21, 6);
+    let tabVal = r.getValues();
+    let tabColor = r.getBackgrounds();
+    for (let i in tabVal) {
+      let valRow = tabVal[i];
+      let colorRow = tabColor[i];
+      let iPoste = oPostes[valRow[5]];
+      if (!iPoste) {
+        doLog('S' + iSem + ', row ' + (i + 3) + ' pas de poste pour ' + valRow[5]);
+        continue;
+      }
+      let c = '';
+      if (colorRow[2] && colorRow[2].toUpperCase() != '#FFFFFF') c = colorRow[2].substring(1);
+      let r = valRow[4].trim();
+      if ((c != '') || (r != '')) {
+        posteDJ.push(iPoste + ";2025;E;" + iSem + ";2;M;" + c + ";" + r.replace(';', ',').replace("\n", ' '));
+      }
+      c = '';
+      if (colorRow[3] && colorRow[3].toUpperCase() != '#FFFFFF') {
+        c = colorRow[3].substring(1);
+        posteDJ.push(iPoste + ";2025;E;" + iSem + ";2;A;" + c + ";");
+      }
+    }
+  }
+  sDebug.getRange(2, 6, 1, 1).setValue('posteDJ');
+  sDebug.getRange(3, 6, 1, 1).setValue(posteDJ.join("\n"));
+}
+
+function background2string(bg) {
+  if (!bg) return;
+  let s = bg.toString();
+  if (s == '') return;
+  if (s == '#ffffff') return;
+  return s.replace('#', '');
 }
 
 function patchV(i) {
