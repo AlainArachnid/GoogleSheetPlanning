@@ -258,7 +258,7 @@ function doExports() {
             doLog(`iRow=${iRow} iCol=${iCol}, iDemiJournee=${iDemiJournee}, v=${v}, valRow[3 + iDemiJournee]=${valRow[3 + iDemiJournee]}`, true);
           // */
           if (v == valRow[3 + iDemiJournee]) continue;
-          tabVal[5] = 37 + Math.floor((iCol - 8) / 4);
+          tabVal[5] = 19 + Math.floor((iCol - 8) / 4);
           tabVal[6] = v;
           tabBnvPosteSem.push(tabVal.join(";"));
         } else {
@@ -317,7 +317,7 @@ function doExports() {
   let posteDJ = [];
   for (let iSem = 37; iSem <= 44; iSem++) {
     let oSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('S' + iSem);
-    let r = oSheet.getRange(3, 1, 21, 6);
+    let r = oSheet.getRange(3, 1, 22, 6);
     let tabVal = r.getValues();
     let tabColor = r.getBackgrounds();
     for (let i in tabVal) {
